@@ -1,12 +1,13 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/Game.gd" type="Script" id=2]
+[ext_resource path="res://Scenes/Enemy.gd" type="Script" id=3]
 
 [sub_resource type="PlaneMesh" id=1]
 size = Vector2( 100, 100 )
 
-[sub_resource type="ConvexPolygonShape" id=5]
+[sub_resource type="ConvexPolygonShape" id=2]
 points = PoolVector3Array( -50.2732, 0.273224, -50.2732, -50.2732, 0.273224, 50.2732, 50.2732, 0.273224, -50.2732, 50.2732, 0.273224, 50.2732 )
 
 [sub_resource type="CapsuleShape" id=3]
@@ -15,6 +16,21 @@ height = 2.0
 
 [sub_resource type="BoxShape" id=4]
 extents = Vector3( 0.5, 0.2, 0.5 )
+
+[sub_resource type="SphereMesh" id=5]
+radius = 2.0
+height = 4.0
+
+[sub_resource type="SpatialMaterial" id=6]
+
+[sub_resource type="PrismMesh" id=7]
+material = SubResource( 6 )
+
+[sub_resource type="MultiMesh" id=8]
+mesh = SubResource( 7 )
+
+[sub_resource type="SphereShape" id=9]
+radius = 4.0
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 2 )
@@ -26,7 +42,7 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Ground"]
-shape = SubResource( 5 )
+shape = SubResource( 2 )
 
 [node name="Player" type="KinematicBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
@@ -45,3 +61,28 @@ shape = SubResource( 4 )
 [node name="Camera" type="Camera" parent="Player/Pivot"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 current = true
+
+[node name="Enemy" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 20 )
+script = ExtResource( 3 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Enemy"]
+mesh = SubResource( 5 )
+material/0 = null
+
+[node name="MultiMeshInstance" type="MultiMeshInstance" parent="Enemy"]
+multimesh = SubResource( 8 )
+
+[node name="Scan" type="RayCast" parent="Enemy"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
+enabled = true
+cast_to = Vector3( 0, -1, 50 )
+
+[node name="Timer" type="Timer" parent="Enemy"]
+wait_time = 3.0
+one_shot = true
+
+[node name="Nearby" type="Area" parent="Enemy"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Enemy/Nearby"]
+shape = SubResource( 9 )
